@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live BTC Trading Bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .box {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Live BTC Trading Bot</h1>
+
+    <div class="box">
+      <h2>Aktueller BTC-Preis: <span id="btc-price">Laden...</span> USD</h2>
+    </div>
+
+    <div class="box">
+      <h2>Portfolio-Wert: <span id="portfolio-value">Laden...</span> USD</h2>
+    </div>
+
+    <div class="box">
+      <h2>
+        Täglicher Gewinn/Verlust:
+        <span id="daily-profit-loss">Laden...</span> USD
+      </h2>
+      <h3>
+        Prozentuale Änderung: <span id="percentage-profit">Laden...</span>%
+      </h3>
+    </div>
+
+    <div class="box">
+      <h2>CSV-Datei herunterladen:</h2>
+      <button onclick="downloadCSV()">Herunterladen</button>
+    </div>
+
+    <script>
+      function fetchData() {
+        fetch("/data")
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("btc-price").textContent =
+              data.btc_price.toFixed(2);
+            document.getElementById("portfolio-value").textContent =
+              data.portfolio_value.toFixed(2);
+            document.getElementById("daily-profit-loss").textContent =
+              data.daily_profit_loss.toFixed(2);
+            document.getElementById("percentage-profit").textContent =
+              data.percentage_profit.toFixed(2);
+          })
+          .catch((error) => console.error("Fehler:", error));
+      }
+
+      // Aktualisiere die Daten alle 10 Sekunden
+      setInterval(fetchData, 10000);
+
+      // Lade die ersten Daten beim Seitenladen
+      fetchData();
+
+      function downloadCSV() {
+        const today = new Date().toISOString().split("T")[0]; // Heutiges Datum im Format YYYY-MM-DD
+        window.location.href = `/download/${today}`;
+      }
+    </script>
+  </body>
+</html>
